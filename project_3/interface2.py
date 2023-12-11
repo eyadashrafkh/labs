@@ -68,18 +68,25 @@ class SudokuSolver:
     def is_valid(self, num, pos):
         # Check row
         if num in self.board[pos[0]]:
+            conflicting_cells_row = [(pos[0], col) for col, value in enumerate(self.board[pos[0]]) if value == num]
+            self.selected = conflicting_cells_row[0]
+            # print("Row:",conflicting_cells_row[0])
             return False
 
         # Check column
         if num in [self.board[i][pos[1]] for i in range(9)]:
+            conflicting_cells_column = [(row, pos[1]) for row in range(9) if self.board[row][pos[1]] == num]
+            # print("Row:",conflicting_cells_column[0])
+            self.selected = conflicting_cells_column[0]
             return False
 
         # Check 3x3 box
         box_row, box_col = pos[0] // 3 * 3, pos[1] // 3 * 3
-        for i in range(box_row, box_row + 3):
-            for j in range(box_col, box_col + 3):
-                if self.board[i][j] == num:
-                    return False
+        conflicting_cells_box = [(i, j) for i in range(box_row, box_row + 3) for j in range(box_col, box_col + 3) if self.board[i][j] == num]
+        if conflicting_cells_box:
+            # print("Box:",conflicting_cells_box[0])
+            self.selected = conflicting_cells_box[0]
+            return False
 
         return True
     
@@ -123,34 +130,29 @@ class SudokuSolver:
         for i in range(9):
             for j in range(9):
                 if self.board[i][j] == num:
-                    # print(i, j)
-                    self.draw_highlights_grids(i, j)
+                    pygame.draw.rect(self.screen, self.RED,
+                                        (j * self.GRID_SIZE, i * self.GRID_SIZE, self.GRID_SIZE, self.GRID_SIZE), 3)
     
     def highlight_selected_cell(self):
         row, col = self.selected
         if self.board[row][col] != 0 :
             self.draw_highlights(self.board[row][col])
+            self.draw_highlights_grids(row, col)
+    
     
     def draw_highlights_grids(self, row, col):
-            # print(row, col)
-            pygame.draw.rect(self.screen, self.RED,
-                                (col * self.GRID_SIZE, row * self.GRID_SIZE, self.GRID_SIZE, self.GRID_SIZE), 2)
-            # Highlight entire row
-            for i in range(9):
-                pygame.draw.rect(self.screen, self.RED,
-                                    (col * self.GRID_SIZE, i * self.GRID_SIZE, self.GRID_SIZE, self.GRID_SIZE), 2)
+        # Highlight entire row
+        pygame.draw.rect(self.screen, self.RED,
+                         (0, row * self.GRID_SIZE, self.WIDTH, self.GRID_SIZE), 3)
 
-            # Highlight entire column
-            for j in range(9):
-                pygame.draw.rect(self.screen, self.RED,
-                                    (j * self.GRID_SIZE, row * self.GRID_SIZE, self.GRID_SIZE, self.GRID_SIZE), 2)
+        # Highlight entire column
+        pygame.draw.rect(self.screen, self.RED,
+                         (col * self.GRID_SIZE, 0, self.GRID_SIZE, self.HEIGHT), 3)
 
-            # Highlight entire 3x3 box
-            box_row, box_col = row // 3 * 3, col // 3 * 3
-            for i in range(box_row, box_row + 3):
-                for j in range(box_col, box_col + 3):
-                    pygame.draw.rect(self.screen, self.RED,
-                                        (j * self.GRID_SIZE, i * self.GRID_SIZE, self.GRID_SIZE, self.GRID_SIZE), 2)
+        # Highlight entire 3x3 box
+        box_row, box_col = row // 3 * 3, col // 3 * 3
+        pygame.draw.rect(self.screen, self.RED,
+                         (box_col * self.GRID_SIZE, box_row * self.GRID_SIZE, 3 * self.GRID_SIZE, 3 * self.GRID_SIZE), 3)
 
     def run(self):
         running = True
@@ -179,7 +181,7 @@ class SudokuSolver:
 
             if self.selected:
                 self.highlight_selected_cell()
-                pygame.draw.rect(self.screen, self.RED, (self.selected[1] * self.GRID_SIZE, self.selected[0] * self.GRID_SIZE, self.GRID_SIZE, self.GRID_SIZE), 2)
+                pygame.draw.rect(self.screen, self.RED, (self.selected[1] * self.GRID_SIZE, self.selected[0] * self.GRID_SIZE, self.GRID_SIZE, self.GRID_SIZE), 3)
 
             pygame.display.flip()
 
