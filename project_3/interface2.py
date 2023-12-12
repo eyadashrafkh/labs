@@ -40,6 +40,8 @@ class SudokuSolver:
 
         self.selected = None
 
+        
+
     def solve_sudoku(self):
         empty = self.find_empty()
         if not empty:
