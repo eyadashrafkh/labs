@@ -92,24 +92,24 @@ def find_empty(board):
     return None
 
 
-def is_valid(board, num, index):
+def is_valid(puzzle, num, index):
     # Check row
     row_start = (index // 9) * 9
     for i in range(row_start, row_start + 9):
-        if board[i] == num and i != index:
+        if puzzle[i] == num and i != index:
             return False, i
 
     # Check column
     col_start = index % 9
     for i in range(col_start, 81, 9):
-        if board[i] == num and i != index:
+        if puzzle[i] == num and i != index:
             return False, i
 
     # Check 3x3 box
     box_start = (index // 27) * 27 + (index % 9) // 3 * 3
     for i in range(box_start, box_start + 3):
         for j in range(3):
-            if board[i + j * 9] == num and (i + j * 9) != index:
+            if puzzle[i + j * 9] == num and (i + j * 9) != index:
                 return False, i
 
     return True, None
