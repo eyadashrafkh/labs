@@ -131,7 +131,9 @@ class Puzzle:
     def solve_gui(self):
         self.update_puzzle()
         find = find_empty_cell(self.puzzle)
-        if not find:
+        if find == None:
+            print()
+            print_puzzle(self.puzzle)
             return True
         else:
             index = find
@@ -146,9 +148,9 @@ class Puzzle:
                 pygame.time.delay(100)
 
                 if self.solve_gui():
-                    return True
+                    break
 
-                self.p[index] = 0
+                self.puzzle[index] = 0
                 self.cubes[index].set(0)
                 self.update_puzzle()
                 self.cubes[index].draw_change(self.win, False)
@@ -260,7 +262,7 @@ class Button:
 
 
 def main():
-    win = pygame.display.set_mode((540,640))
+    win = pygame.display.set_mode((540,680))
     pygame.display.set_caption("Sudoku Solver")
     puzzle = Puzzle(540, 540, win)
     key = None
@@ -269,8 +271,8 @@ def main():
     strikes = 0
 
     # Create buttons
-    button1 = Button(20, 600, "AI generate Puzzle", generate_puzzle)
-    button2 = Button(390, 600, "Insert Puzzle", init_puzzle)
+    button1 = Button(20, 640, "AI generate Puzzle", generate_puzzle)
+    button2 = Button(390, 640, "Insert Puzzle", init_puzzle)
 
     buttons = [button1, button2]
 
@@ -335,7 +337,10 @@ def main():
                     run = False
 
                 if event.key == pygame.K_SPACE:
-                    puzzle.solve_gui()
+                    if puzzle.solve_gui():
+                        finish_game()
+                    else:
+                        print("No solution")
 
                 if event.key == pygame.K_RETURN:
                     i, j = puzzle.selected
@@ -350,7 +355,6 @@ def main():
 
                         if puzzle.is_finished():
                             finish_game()
-                            print("Game over")
 
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 pos = pygame.mouse.get_pos()

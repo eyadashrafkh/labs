@@ -13,7 +13,7 @@ BLUE = (0, 0, 255)
 GREEN = (0, 255, 0)
 RED = (255, 0, 0)
 GRAY = (128,128,128)
-LIGHT_BLUE = (100, 200, 255)  # Light blue color
+LIGHT_BLUE = (100, 150, 255)  # Light blue color
 
 
 # Defined values
@@ -140,7 +140,7 @@ def find_empty_cell(puzzle):
     Returns:
         int: The index of the first empty cell, or None if there are no empty cells.
     """
-    for i in range(PUZZLE_SIZE * PUZZLE_SIZE):
+    for i in range(0, PUZZLE_SIZE * PUZZLE_SIZE):
         if puzzle[i] == EMPTY_VALUE:
             return i
     return None
@@ -208,17 +208,18 @@ def redraw_window(win, puzzle, time, strikes):
     """
    
     # Draw time
-    fnt = pygame.font.SysFont("comicsans", 30)
+    fnt = pygame.font.SysFont("comicsans", 40)
     text = fnt.render("Time: " + format_time(time), 1, BLACK)
-    win.blit(text, (540 - 220, 540))
+    win.blit(text, (300, 540))
    
     # Draw Strikes
+    fnt = pygame.font.SysFont("comicsans", 30)
     text = fnt.render("X " * strikes, 1, RED)
-    win.blit(text, (20, 580))
+    win.blit(text, (10, 580))
     
     # # Draw numbers
     numbers_text = fnt.render(" ".join(str(i) if count_values(puzzle.get_puzzle())[i] < 9 else " " for i in range(1, 10)), 1, LIGHT_BLUE)
-    win.blit(numbers_text, (10, 540))
+    win.blit(numbers_text, (10, 550))
     
     # Draw grid and board
     puzzle.draw()
