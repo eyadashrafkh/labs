@@ -148,7 +148,7 @@ class Puzzle:
                 pygame.time.delay(100)
 
                 if self.solve_gui():
-                    break
+                    return True
 
                 self.puzzle[index] = 0
                 self.cubes[index].set(0)
