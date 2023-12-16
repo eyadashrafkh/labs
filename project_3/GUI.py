@@ -1,29 +1,22 @@
 # GUI.py
 import time
 from functions import *
+from puzzle_genetator import generate_puzzle
 pygame.font.init()
 
-class Grid:
 
-    board = [
-        7, 8, 0, 4, 0, 0, 1, 2, 0,
-        6, 0, 0, 0, 7, 5, 0, 0, 9,
-        0, 0, 0, 6, 0, 1, 0, 7, 8,
-        0, 0, 7, 0, 4, 0, 2, 6, 0,
-        0, 0, 1, 0, 5, 0, 9, 3, 0,
-        9, 0, 4, 0, 6, 0, 0, 0, 5,
-        0, 7, 0, 3, 0, 0, 0, 1, 2,
-        1, 2, 0, 0, 0, 7, 4, 0, 0,
-        0, 4, 9, 2, 0, 6, 0, 0, 7
-    ]
+# Puzzle class
+class Puzzle:
+
     pygame.display.set_mode
 
-    def __init__(self, rows, cols, width, height, win):
+    def __init__(self, width, height, win):
         
         # Window, Grid and Cells Dimensions
-        self.rows = rows
-        self.cols = cols
-        self.cubes = [Cube(self.board[i*self.cols + j], i, j, width, height) for i in range(rows) for j in range(cols)]
+        self.puzzle = generate_puzzle()
+        self.rows = PUZZLE_SIZE
+        self.cols = PUZZLE_SIZE
+        self.cubes = [Cube(self.puzzle[i*self.cols + j], i, j, width, height) for i in range(self.rows) for j in range(self.cols)]
         self.width = width
         self.height = height
         self.win = win
@@ -33,6 +26,15 @@ class Grid:
         self.update_model()
         self.selected = None
         self.color = "Blue"
+
+
+    def set_puzzle(self, puzzle):
+        self.puzzle = puzzle
+        self.cubes = [Cube(self.puzzle[i*self.cols + j], i, j, self.width, self.height) for i in range(self.rows) for j in range(self.cols)]
+
+
+    def get_puzzle(self):
+        return self.puzzle
 
 
     def update_model(self):
@@ -112,7 +114,7 @@ class Grid:
         return True
 
     def solve(self):
-        find = find_empty(self.model)
+        find = find_empty_cell(self.model)
         if not find:
             return True
         else:
@@ -131,7 +133,7 @@ class Grid:
 
     def solve_gui(self):
         self.update_model()
-        find = find_empty(self.model)
+        find = find_empty_cell(self.model)
         if not find:
             return True
         else:
@@ -159,6 +161,7 @@ class Grid:
         return False
 
 
+# Cube class
 class Cube:
     rows = 9
     cols = 9
@@ -217,45 +220,78 @@ class Cube:
         self.temp = val
 
 
+# Button class
+class Button:
+    def __init__(self, x, y, text, click_function):
+        self.text = text
+        self.x = x
+        self.y = y
+        self.rect = None
+        self.click_function = click_function
+        self.puzzle = None
+        self.hovered = False
 
-def is_valid(board, num, index):
-    # Check row
-    row_start = (index // 9) * 9
-    for i in range(row_start, row_start + 9):
-        if board[i] == num and i != index:
-            return False, i
+    def draw(self, win):
+        fnt = pygame.font.SysFont("comicsans", 20)
+        text_surface = fnt.render(str(self.text), True, BLACK)
+        text_rect = text_surface.get_rect()
+        width = text_rect.width + 10  # Add some padding
+        height = text_rect.height + 10  # Add some padding
+        rect = pygame.Rect(self.x, self.y, width, height)
+        if self.hovered:
+            pygame.draw.rect(win, WHITE, (self.x, self.y, width, height), 3)
+        else:
+            pygame.draw.rect(win, GRAY, (self.x, self.y, width, height), 3)
+        text_rect.center = rect.center
+        self.rect = rect
+        win.blit(text_surface, text_rect)
 
-    # Check column
-    col_start = index % 9
-    for i in range(col_start, 81, 9):
-        if board[i] == num and i != index:
-            return False, i
+    def is_cursor_in_button(self, cursor_pos):
+        if self.rect:
+            return self.rect.collidepoint(cursor_pos)
+        return False
 
-    # Check 3x3 box
-    box_start = (index // 27) * 27 + (index % 9) // 3 * 3
-    for i in range(box_start, box_start + 3):
-        for j in range(3):
-            if board[i + j * 9] == num and (i + j * 9) != index:
-                return False, i
+    def handle_event(self, event):
+        if event.type == pygame.MOUSEMOTION:
+            self.hovered = self.rect.collidepoint(pygame.mouse.get_pos())
+        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+            self.puzzle = self.click_function()
+            return True
 
-    return True, None
+    def get_puzzle(self):
+        return self.puzzle
 
 
 def main():
-    win = pygame.display.set_mode((540,600))
+    win = pygame.display.set_mode((540,640))
     pygame.display.set_caption("Sudoku Solver")
-    board = Grid(9, 9, 540, 540, win)
+    puzzle = Puzzle(540, 540, win)
     key = None
     run = True
     start = time.time()
     strikes = 0
+
+    # Create buttons
+    button1 = Button(20, 600, "AI generate Puzzle", generate_puzzle)
+    button2 = Button(390, 600, "Insert Puzzle", init_puzzle)
+
+    buttons = [button1, button2]
+
     while run:
 
         play_time = round(time.time() - start)
 
         for event in pygame.event.get():
+
+            for button in buttons:
+                if button.is_cursor_in_button(pygame.mouse.get_pos()):
+                    if button.handle_event(event):
+                        if button.get_puzzle() is not None:
+                            puzzle.set_puzzle(button.get_puzzle())
+                
             if event.type == pygame.QUIT:
-                run = False
+                run = False                
+            
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_1:
                     key = 1
@@ -294,38 +330,46 @@ def main():
                 if event.key == pygame.K_KP9:
                     key = 9
                 if event.key == pygame.K_DELETE:
-                    board.clear()
+                    puzzle.clear()
                     key = None
 
+                if event.key == pygame.K_ESCAPE:
+                    run = False
+
                 if event.key == pygame.K_SPACE:
-                    board.solve_gui()
+                    puzzle.solve_gui()
 
                 if event.key == pygame.K_RETURN:
-                    i, j = board.selected
+                    i, j = puzzle.selected
                     index = i * 9 + j  # Convert 2D index to 1D index
-                    if board.cubes[index].temp != 0:
-                        if board.place(board.cubes[index].temp):
+                    if puzzle.cubes[index].temp != 0:
+                        if puzzle.place(puzzle.cubes[index].temp):
                             print("Success")
                         else:
                             print("Wrong")
                             strikes += 1
                         key = None
 
-                        if board.is_finished():
+                        if puzzle.is_finished():
                             finish_game()
                             print("Game over")
 
-            if event.type == pygame.MOUSEBUTTONDOWN:
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 pos = pygame.mouse.get_pos()
-                clicked = board.click(pos)
+                clicked = puzzle.click(pos)
                 if clicked:
-                    board.select(clicked[0], clicked[1])
+                    puzzle.select(clicked[0], clicked[1])
                     key = None
 
-        if board.selected and key != None:
-            board.sketch(key)
+        win.fill(WHITE)
 
-        redraw_window(win, board, play_time, strikes)
+        if puzzle.selected and key != None:
+            puzzle.sketch(key)
+
+        for button in buttons:
+            button.draw(win)
+
+        redraw_window(win, puzzle, play_time, strikes)
         pygame.display.update()
 
 

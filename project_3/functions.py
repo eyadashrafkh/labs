@@ -1,7 +1,7 @@
 # functions.py
-import random
 from tkinter import messagebox
 import sys
+import random
 import pygame
 
 # Global Variables 
@@ -14,26 +14,49 @@ GREEN = (0, 255, 0)
 RED = (255, 0, 0)
 GRAY = (128,128,128)
 
+# Defined values
+PUZZLE_SIZE = 9
+EMPTY_VALUE = 0
+values = [1,2,3,4,5,6,7,8,9]
+numberOfSolution = 1
 
 
-# Functoins
+def init_puzzle():
+    return [EMPTY_VALUE] * 81
 
-def print_board(board):
-    for i in range(len(board)//9):
+
+def print_puzzle(puzzle):
+    """
+    Prints the Sudoku puzzle board.
+
+    Args:
+        board (list): The Sudoku puzzle board.
+
+    Returns:
+        None
+    """
+    for i in range(PUZZLE_SIZE):
         if i % 3 == 0 and i != 0:
             print("- - - - - - - - - - - -  ")
 
-        for j in range(len(board)//9):
+        for j in range(PUZZLE_SIZE):
             if j % 3 == 0 and j != 0:
                 print(" | ", end="")
 
             if j == 8:
-                print(board[i * 9 + j])
+                print(puzzle[i * PUZZLE_SIZE + j])
             else:
-                print(str(board[i * 9 + j]) + " ", end="")
+                print(str(puzzle[i * PUZZLE_SIZE + j]) + " ", end="")
 
 
 def finish_game():
+    """
+    Displays a message box indicating that the Sudoku puzzle has been solved.
+    Asks the user if they want to quit or continue the game.
+
+    Returns:
+        None
+    """
     messagebox.showinfo("Sudoku Solved", "Congratulations! You have solved the Sudoku puzzle!")
     choice = messagebox.askquestion("Quit or Continue", "Do you want to quit or continue?")
     if choice == "yes":
@@ -45,54 +68,98 @@ def finish_game():
         pass
 
 
-def generate_random_board():
-    board = [0] * 81
+def is_solvable(puzzle):
+    """
+    Checks if the Sudoku puzzle board is solvable.
 
-    # Fill the board with random numbers
-    for i in range(81):
-        num = random.choices([0, 1, 2, 3, 4, 5, 6, 7, 8, 9], weights=[1, 1, 1, 1, 1, 1, 1, 1, 1, 1])[0]
-        if is_valid(board, num, i)[0]:# and is_solvable(board):
-            board[i] = num
-        else:
-            board[i] = 0
+    Args:
+        board (list): The Sudoku puzzle board.
 
-    return board
-
-
-def is_solvable(board):
-    if solve_sudoku(board):
+    Returns:
+        bool: True if the board is solvable, False otherwise.
+    """
+    if solve_sudoku(puzzle):
         return True
     else:
         return False
 
 
-def solve_sudoku(board):
-    empty = find_empty(board)
+def solve_sudoku(puzzle):
+    """
+    Solves the Sudoku puzzle using backtracking algorithm.
+
+    Args:
+        board (list): The Sudoku puzzle board.
+
+    Returns:
+        bool: True if the board is solvable, False otherwise.
+    """
+    empty = find_empty_cell(puzzle)
     if not empty:
         return True
 
     index = empty
 
-    for num in range(1, 10):
-        if is_valid(num, index, board)[0]:
-            board[index] = num
+    for num in values:
+        if is_valid(num, index, puzzle)[0]:
+            puzzle[index] = num
 
-            if is_solvable(board):
+            if is_solvable(puzzle):
                 return True
 
-            board[index] = 0
+            puzzle[index] = 0
 
     return False
 
 
-def find_empty(board):
-    for i in range(81):
-        if board[i] == 0:
+def find_empty_cell(puzzle):
+    """
+    Finds the index of the first empty cell in the Sudoku puzzle board.
+
+    Args:
+        puzzle (list): The Sudoku puzzle board.
+
+    Returns:
+        int: The index of the first empty cell, or None if there are no empty cells.
+    """
+    for i in range(PUZZLE_SIZE * PUZZLE_SIZE):
+        if puzzle[i] == EMPTY_VALUE:
             return i
     return None
 
 
+def has_empty_cell(puzzle):
+    """
+    Checks if the Sudoku puzzle board has any empty cells.
+
+    Args:
+        puzzle (list): The Sudoku puzzle board.
+
+    Returns:
+        bool: True if there are empty cells, False otherwise.
+    """
+    return EMPTY_VALUE in puzzle
+
+
 def is_valid(puzzle, num, index):
+    """
+    Checks if a number can be placed in a specific cell of the Sudoku puzzle board.
+
+    Args:
+        puzzle (list): The Sudoku puzzle board.
+        num (int): The number to be placed.
+        index (int): The index of the cell.
+
+    Returns:
+        tuple: A tuple containing a boolean value indicating if the number is valid and the index of the conflicting cell.
+    """
+    # Check 3x3 box
+    box_start = (index // 27) * 27 + (index % 9) // 3 * 3
+    for i in range(box_start, box_start + 3):
+        for j in range(3):
+            if puzzle[i + j * 9] == num and (i + j * 9) != index:
+                return False, i+j*9
+    
     # Check row
     row_start = (index // 9) * 9
     for i in range(row_start, row_start + 9):
@@ -105,48 +172,70 @@ def is_valid(puzzle, num, index):
         if puzzle[i] == num and i != index:
             return False, i
 
-    # Check 3x3 box
-    box_start = (index // 27) * 27 + (index % 9) // 3 * 3
-    for i in range(box_start, box_start + 3):
-        for j in range(3):
-            if puzzle[i + j * 9] == num and (i + j * 9) != index:
-                return False, i
-
     return True, None
 
 
-def redraw_window(win, board, time, strikes):
-    win.fill((255,255,255))
+def redraw_window(win, puzzle, time, strikes):
+    """
+    Redraws the game window.
+
+    Args:
+        win (pygame.Surface): The game window surface.
+        board (SudokuBoard): The Sudoku board object.
+        time (int): The elapsed time in seconds.
+        strikes (int): The number of strikes.
+
+    Returns:
+        None
+    """
+   
     # Draw time
     fnt = pygame.font.SysFont("comicsans", 40)
     text = fnt.render("Time: " + format_time(time), 1, BLACK)
     win.blit(text, (540 - 220, 540))
+   
     # Draw Strikes
     text = fnt.render("X " * strikes, 1, RED)
-    win.blit(text, (20, 540))
+    win.blit(text, (20, 580))
+    
+    # Draw numbers
+    numbers_text = fnt.render(" ".join(str(i) for i in range(1, 10)), 1, BLACK)
+    win.blit(numbers_text, (10, 540))
+    
     # Draw grid and board
-    board.draw()
+    puzzle.draw()
 
 
 def format_time(secs):
+    """
+    Formats the time in seconds to a string in the format "MM:SS".
+
+    Args:
+        secs (int): The time in seconds.
+
+    Returns:
+        str: The formatted time string.
+    """
     sec = secs % 60
     minute = secs // 60
     time = f"{minute:02d}:{sec:02d}"
     return time
 
 
-# Board setup
-board = [
-    5, 3, 0, 0, 7, 0, 0, 0, 0,
-    6, 0, 0, 1, 9, 5, 0, 0, 0,
-    0, 9, 8, 0, 0, 0, 0, 6, 0,
-    8, 0, 0, 0, 6, 0, 0, 0, 3,
-    4, 0, 0, 8, 0, 3, 0, 0, 1,
-    7, 0, 0, 0, 2, 0, 0, 0, 6,
-    0, 6, 0, 0, 0, 0, 2, 8, 0,
-    0, 0, 0, 4, 1, 9, 0, 0, 5,
-    0, 0, 0, 0, 8, 0, 0, 7, 9,
-]
 
-board2 = generate_random_board()
-print_board(board2)
+
+# # Board setup
+# board = [
+#     5, 3, 0, 0, 7, 0, 0, 0, 0,
+#     6, 0, 0, 1, 9, 5, 0, 0, 0,
+#     0, 9, 8, 0, 0, 0, 0, 6, 0,
+#     8, 0, 0, 0, 6, 0, 0, 0, 3,
+#     4, 0, 0, 8, 0, 3, 0, 0, 1,
+#     7, 0, 0, 0, 2, 0, 0, 0, 6,
+#     0, 6, 0, 0, 0, 0, 2, 8, 0,
+#     0, 0, 0, 4, 1, 9, 0, 0, 5,
+#     0, 0, 0, 0, 8, 0, 0, 7, 9,
+# ]
+
+# board2 = generate_random_board()
+# print_puzzle(board2)
