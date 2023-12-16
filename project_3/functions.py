@@ -13,12 +13,30 @@ BLUE = (0, 0, 255)
 GREEN = (0, 255, 0)
 RED = (255, 0, 0)
 GRAY = (128,128,128)
+LIGHT_BLUE = (100, 200, 255)  # Light blue color
+
 
 # Defined values
 PUZZLE_SIZE = 9
 EMPTY_VALUE = 0
 values = [1,2,3,4,5,6,7,8,9]
 numberOfSolution = 1
+
+
+def count_values(puzzle):
+    """
+    Counts the number of occurrences of each value in the puzzle.
+
+    Args:
+        puzzle (list): The Sudoku puzzle board.
+
+    Returns:
+        dict: A dictionary containing the count of each value.
+    """
+    value_count = {}
+    for value in values:
+        value_count[value] = puzzle.count(value)
+    return value_count
 
 
 def init_puzzle():
@@ -190,7 +208,7 @@ def redraw_window(win, puzzle, time, strikes):
     """
    
     # Draw time
-    fnt = pygame.font.SysFont("comicsans", 40)
+    fnt = pygame.font.SysFont("comicsans", 30)
     text = fnt.render("Time: " + format_time(time), 1, BLACK)
     win.blit(text, (540 - 220, 540))
    
@@ -198,8 +216,8 @@ def redraw_window(win, puzzle, time, strikes):
     text = fnt.render("X " * strikes, 1, RED)
     win.blit(text, (20, 580))
     
-    # Draw numbers
-    numbers_text = fnt.render(" ".join(str(i) for i in range(1, 10)), 1, BLACK)
+    # # Draw numbers
+    numbers_text = fnt.render(" ".join(str(i) if count_values(puzzle.get_puzzle())[i] < 9 else " " for i in range(1, 10)), 1, LIGHT_BLUE)
     win.blit(numbers_text, (10, 540))
     
     # Draw grid and board

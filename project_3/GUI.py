@@ -22,8 +22,7 @@ class Puzzle:
         self.win = win
         
         # Board Setup
-        self.model = None
-        self.update_model()
+        self.update_puzzle()
         self.selected = None
         self.color = "Blue"
 
@@ -31,30 +30,28 @@ class Puzzle:
     def set_puzzle(self, puzzle):
         self.puzzle = puzzle
         self.cubes = [Cube(self.puzzle[i*self.cols + j], i, j, self.width, self.height) for i in range(self.rows) for j in range(self.cols)]
-
-
+        
     def get_puzzle(self):
+        self.update_puzzle()
         return self.puzzle
 
-
-    def update_model(self):
-        self.model = [self.cubes[i*self.cols + j].value for i in range(self.rows) for j in range(self.cols)]
+    def update_puzzle(self):
+        self.puzzle = [self.cubes[i*self.cols + j].value for i in range(self.rows) for j in range(self.cols)]
         
 
     def place(self, val):
         row, col = self.selected
         if self.cubes[row*self.cols + col].value == 0:
             self.cubes[row*self.cols + col].set(val)
-            self.update_model()
-
-            is_valid_result, conflicted_cell_index = is_valid(self.model, val, row*self.cols + col)
+            self.update_puzzle()
+            is_valid_result, conflicted_cell_index = is_valid(self.puzzle, val, row*self.cols + col)
             if is_valid_result and self.solve():
                 self.color = "Green"
                 return True
             else:
                 self.cubes[row*self.cols + col].set(0)
                 self.cubes[row*self.cols + col].set_temp(0)
-                self.update_model()
+                self.update_puzzle()
                 row, col = conflicted_cell_index//9, conflicted_cell_index%9
                 self.select(row, col)
                 self.color = "Red"
@@ -114,46 +111,46 @@ class Puzzle:
         return True
 
     def solve(self):
-        find = find_empty_cell(self.model)
+        find = find_empty_cell(self.puzzle)
         if not find:
             return True
         else:
             index = find
 
         for i in range(1, 10):
-            if is_valid(self.model, i, index):
-                self.model[index] = i
+            if is_valid(self.puzzle, i, index):
+                self.puzzle[index] = i
 
                 if self.solve():
                     return True
                 
-                self.model[index] = 0
+                self.puzzle[index] = 0
 
         return False
 
     def solve_gui(self):
-        self.update_model()
-        find = find_empty_cell(self.model)
+        self.update_puzzle()
+        find = find_empty_cell(self.puzzle)
         if not find:
             return True
         else:
             index = find
 
         for i in range(1, 10):
-            if is_valid(self.model, i, index)[0]:
-                self.model[index] = i
+            if is_valid(self.puzzle, i, index)[0]:
+                self.puzzle[index] = i
                 self.cubes[index].set(i)
                 self.cubes[index].draw_change(self.win, True)
-                self.update_model()
+                self.update_puzzle()
                 pygame.display.update()
                 pygame.time.delay(100)
 
                 if self.solve_gui():
                     return True
 
-                self.model[index] = 0
+                self.p[index] = 0
                 self.cubes[index].set(0)
-                self.update_model()
+                self.update_puzzle()
                 self.cubes[index].draw_change(self.win, False)
                 pygame.display.update()
                 pygame.time.delay(100)
@@ -288,7 +285,8 @@ def main():
                     if button.handle_event(event):
                         if button.get_puzzle() is not None:
                             puzzle.set_puzzle(button.get_puzzle())
-                
+                else:
+                    button.hovered = False
             if event.type == pygame.QUIT:
                 run = False                
             
