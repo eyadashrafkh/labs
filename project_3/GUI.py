@@ -280,9 +280,9 @@ def main():
     # Create buttons
     button1 = Button(20, 640, "AI generate Puzzle", generate_puzzle)
     button2 = Button(390, 640, "Insert Puzzle", init_puzzle)
-    button3 = Button(200, 640, "Solve Puzzle", solve)
+    button3 = Button(220, 640, "Solve Puzzle", solve)
 
-    buttons = [button1, button2]
+    buttons = [button1, button2, button3]
 
     while run:
 
