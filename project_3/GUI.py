@@ -2,6 +2,7 @@
 import time
 from functions import *
 from puzzle_genetator import generate_puzzle
+from CSP import CSP
 pygame.font.init()
 
 
@@ -261,6 +262,12 @@ class Button:
         return self.puzzle
 
 
+def solve(self):
+    ai = CSP(self.puzzle)
+    solution = ai.solve()
+    print("Solution:", solution)
+
+
 def main():
     win = pygame.display.set_mode((540,680))
     pygame.display.set_caption("Sudoku Solver")
@@ -273,6 +280,7 @@ def main():
     # Create buttons
     button1 = Button(20, 640, "AI generate Puzzle", generate_puzzle)
     button2 = Button(390, 640, "Insert Puzzle", init_puzzle)
+    button3 = Button(200, 640, "Solve Puzzle", solve)
 
     buttons = [button1, button2]
 

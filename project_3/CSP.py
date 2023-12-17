@@ -13,6 +13,7 @@ def domain_of(val):
     domain[9] = 1
     return domain
 
+
 class CSP:
     def __init__(self, board):
         self.board = board
@@ -29,7 +30,14 @@ class CSP:
             return False
 
         # if arcs are consistent, start solving
-        return self.backtrack()
+        solvable = self.backtrack()
+
+        if solvable:
+            for i in range(9*9):
+                if self.board[i] == 0:
+                    self.board[i] = self.variables[i].index(True)+1
+
+        return self.board
 
     def backtrack(self):
         # if heap is empty, return True
