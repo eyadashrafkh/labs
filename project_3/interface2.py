@@ -1,6 +1,15 @@
 import pygame
 import sys
 
+
+# debugging functions
+DEBUG = True
+def my_print(*args):
+    if DEBUG:
+        print(*args)
+# end debugging functions
+
+
 class SudokuSolver:
     def __init__(self):
         # Pygame setup
@@ -36,6 +45,9 @@ class SudokuSolver:
             [0, 0, 0, 0, 8, 0, 0, 7, 9],
         ]
 
+        # self.board = [element for row in self.board for element in row]
+
+
         self.highlighted_cells = set()
 
         self.selected = None
@@ -68,29 +80,32 @@ class SudokuSolver:
         return None
 
     def is_valid(self, num, pos):
+        ret = True
         # Check row
         if num in self.board[pos[0]]:
             conflicting_cells_row = [(pos[0], col) for col, value in enumerate(self.board[pos[0]]) if value == num]
             self.selected = conflicting_cells_row[0]
             # print("Row:",conflicting_cells_row[0])
-            return False
+            ret = False
 
         # Check column
-        if num in [self.board[i][pos[1]] for i in range(9)]:
+        elif num in [self.board[i][pos[1]] for i in range(9)]:
             conflicting_cells_column = [(row, pos[1]) for row in range(9) if self.board[row][pos[1]] == num]
             # print("Row:",conflicting_cells_column[0])
             self.selected = conflicting_cells_column[0]
-            return False
+            ret = False
 
-        # Check 3x3 box
-        box_row, box_col = pos[0] // 3 * 3, pos[1] // 3 * 3
-        conflicting_cells_box = [(i, j) for i in range(box_row, box_row + 3) for j in range(box_col, box_col + 3) if self.board[i][j] == num]
-        if conflicting_cells_box:
-            # print("Box:",conflicting_cells_box[0])
-            self.selected = conflicting_cells_box[0]
-            return False
+        else:
+            # Check 3x3 box
+            box_row, box_col = pos[0] // 3 * 3, pos[1] // 3 * 3
+            conflicting_cells_box = [(i, j) for i in range(box_row, box_row + 3) for j in range(box_col, box_col + 3) if self.board[i][j] == num]
+            if conflicting_cells_box:
+                # print("Box:",conflicting_cells_box[0])
+                self.selected = conflicting_cells_box[0]
+                ret = False
 
-        return True
+        self.selected = pos
+        return ret
     
     # def is_valid2(self, num, pos):
     #     # Check row
@@ -167,14 +182,17 @@ class SudokuSolver:
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     pos = pygame.mouse.get_pos()
                     self.selected = (pos[1] // self.GRID_SIZE, pos[0] // self.GRID_SIZE)
-                    print(self.selected)
+                    my_print(self.selected)
                 
                 if event.type == pygame.KEYDOWN and self.selected:
                     if event.unicode.isdigit() and 1 <= int(event.unicode) <= 9:
-                        if self.is_valid(int(event.unicode), (self.selected[0], self.selected[1])):
-                            self.board[self.selected[0]][self.selected[1]] = int(event.unicode)
+                        input = int(event.unicode)
+
+                        if self.is_valid(input, (self.selected[0], self.selected[1])):
+                            self.board[self.selected[0]][self.selected[1]] = input
                         else:
-                            print("Invalid number!")
+                            my_print("Invalid number!")
+
                     if event.key == pygame.K_RETURN:
                         self.solve_sudoku()
 
