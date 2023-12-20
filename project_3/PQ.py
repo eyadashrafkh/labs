@@ -15,7 +15,7 @@ class PQ:
 
     def push(self, priority, item):
         """Push item to the heap and heapify"""
-        self.pointers[item] = (priority, self.count, item)
+        self.pointers[item] = [priority, self.count, item]
         heapq.heappush(self.heap, self.pointers[item])
         self.count += 1
 
@@ -23,10 +23,11 @@ class PQ:
         """Heapify the heap"""
         heapq.heapify(self.heap)
 
-    def update(self, priority, item):
+    def update(self, item, priority):
         """Update the priority of item without heapifying"""
+        print("update", item, priority)
+        print(self.pointers[item])
         self.pointers[item][0] = priority
-        self.count += 1
 
     def pop(self):
         """Pop item from the heap and heapify"""

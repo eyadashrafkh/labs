@@ -130,35 +130,42 @@ class Puzzle:
         return False
 
     def solve_gui(self):
-        self.update_puzzle()
-        find = find_empty_cell(self.puzzle)
-        if find == None:
-            print()
-            print_puzzle(self.puzzle)
+        # self.update_puzzle()
+        # find = find_empty_cell(self.puzzle)
+        # if find == None:
+        #     print()
+        #     print_puzzle(self.puzzle)
+        #     return True
+        # else:
+        #     index = find
+        #
+        # for i in range(1, 10):
+        #     if is_valid(self.puzzle, i, index)[0]:
+        #         self.puzzle[index] = i
+        #         self.cubes[index].set(i)
+        #         self.cubes[index].draw_change(self.win, True)
+        #         self.update_puzzle()
+        #         pygame.display.update()
+        #         pygame.time.delay(100)
+        #
+        #         if self.solve_gui():
+        #             return True
+        #
+        #         self.puzzle[index] = 0
+        #         self.cubes[index].set(0)
+        #         self.update_puzzle()
+        #         self.cubes[index].draw_change(self.win, False)
+        #         pygame.display.update()
+        #         pygame.time.delay(100)
+        #
+        # return False
+
+        ai = CSP(self.puzzle)
+        solution = ai.solve()
+        print("Solution:", solution)
+        if solution:
+            self.set_puzzle(solution)
             return True
-        else:
-            index = find
-
-        for i in range(1, 10):
-            if is_valid(self.puzzle, i, index)[0]:
-                self.puzzle[index] = i
-                self.cubes[index].set(i)
-                self.cubes[index].draw_change(self.win, True)
-                self.update_puzzle()
-                pygame.display.update()
-                pygame.time.delay(100)
-
-                if self.solve_gui():
-                    return True
-
-                self.puzzle[index] = 0
-                self.cubes[index].set(0)
-                self.update_puzzle()
-                self.cubes[index].draw_change(self.win, False)
-                pygame.display.update()
-                pygame.time.delay(100)
-
-        return False
 
 
 # Cube class
@@ -260,12 +267,6 @@ class Button:
 
     def get_puzzle(self):
         return self.puzzle
-
-
-def solve(self):
-    ai = CSP(self.puzzle)
-    solution = ai.solve()
-    print("Solution:", solution)
 
 
 def main():
