@@ -297,6 +297,7 @@ def main():
                             puzzle.set_puzzle(button.get_puzzle())
                 else:
                     button.hovered = False
+                    
             if event.type == pygame.QUIT:
                 run = False
 
