@@ -14,8 +14,8 @@ class Puzzle:
     def __init__(self, width, height, win):
         
         # Window, Grid and Cells Dimensions
-        # self.puzzle = generate_puzzle()
-        self.puzzle = [3,0,0,0,0,0,0,2,0,0,0,6,8,0,0,3,0,7,0,1,0,0,9,0,0,0,0,0,0,5,0,0,0,0,4,0,9,0,0,0,8,0,5,0,2,0,0,0,2,0,0,0,6,0,6,0,0,0,0,3,0,0,0,0,0,3,7,0,0,8,0,5,0,0,0,0,0,0,4,0,0]
+        self.puzzle = generate_puzzle()
+        # self.puzzle = [3,0,0,0,0,0,0,2,0,0,0,6,8,0,0,3,0,7,0,1,0,0,9,0,0,0,0,0,0,5,0,0,0,0,4,0,9,0,0,0,8,0,5,0,2,0,0,0,2,0,0,0,6,0,6,0,0,0,0,3,0,0,0,0,0,3,7,0,0,8,0,5,0,0,0,0,0,0,4,0,0]
         self.rows = PUZZLE_SIZE
         self.cols = PUZZLE_SIZE
         self.cubes = [Cube(self.puzzle[i*self.cols + j], i, j, width, height) for i in range(self.rows) for j in range(self.cols)]
@@ -157,15 +157,12 @@ class Puzzle:
         #         pygame.time.delay(100)
         #
         # return False
-        self.update_puzzle()
         ai = CSP(self.puzzle)
         solution = ai.solve()
         print("Solution:", solution)
         if solution:
-            pygame.display.update()
-            pygame.time.delay(100)
+            self.set_puzzle(solution)
             return True
-
 
 # Cube class
 class Cube:
