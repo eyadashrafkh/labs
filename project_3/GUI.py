@@ -14,7 +14,8 @@ class Puzzle:
     def __init__(self, width, height, win):
         
         # Window, Grid and Cells Dimensions
-        self.puzzle = generate_puzzle()
+        # self.puzzle = generate_puzzle()
+        self.puzzle = [3,0,0,0,0,0,0,2,0,0,0,6,8,0,0,3,0,7,0,1,0,0,9,0,0,0,0,0,0,5,0,0,0,0,4,0,9,0,0,0,8,0,5,0,2,0,0,0,2,0,0,0,6,0,6,0,0,0,0,3,0,0,0,0,0,3,7,0,0,8,0,5,0,0,0,0,0,0,4,0,0]
         self.rows = PUZZLE_SIZE
         self.cols = PUZZLE_SIZE
         self.cubes = [Cube(self.puzzle[i*self.cols + j], i, j, width, height) for i in range(self.rows) for j in range(self.cols)]
@@ -38,7 +39,6 @@ class Puzzle:
 
     def update_puzzle(self):
         self.puzzle = [self.cubes[i*self.cols + j].value for i in range(self.rows) for j in range(self.cols)]
-        
 
     def place(self, val):
         row, col = self.selected
@@ -58,11 +58,9 @@ class Puzzle:
                 self.color = "Red"
                 return False
 
-
     def sketch(self, val):
         row, col = self.selected
         self.cubes[row*self.cols + col].set_temp(val)
-
 
     def draw(self):
         # Draw Grid Lines
@@ -282,9 +280,8 @@ def main():
     # Create buttons
     button1 = Button(20, 640, "AI generate Puzzle", generate_puzzle)
     button2 = Button(390, 640, "Insert Puzzle", init_puzzle)
-    button3 = Button(220, 640, "Solve Puzzle", puzzle.solve_gui)
 
-    buttons = [button1, button2, button3]
+    buttons = [button1, button2]
 
     while run:
 

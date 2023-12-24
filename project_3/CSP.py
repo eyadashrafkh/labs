@@ -1,5 +1,5 @@
 from PQ import PQ
-
+from copy import deepcopy
 # Domain is a list of 10 values, each value is True if it is available. the 10th value is the number of available values
 FULL_DOMAIN = ([True]*9) + [9]
 EMPTY_DOMAIN = ([False]*9) + [0]
@@ -59,8 +59,14 @@ class CSP:
         ind = self.heap.pop()
         print(f"Current cell: {ind//9}, {ind%9}")
 
+        if ind == 9 or ind == 20:
+            print("here: ", self.variables[68])
+
         # save a copy of the domain in case we backtrack
         domain_temp = self.variables[ind].copy()
+
+        variables_temp = deepcopy(self.variables)
+        heap_temp = deepcopy(self.heap)
 
         # loop over the domain
         for i in range(9):
@@ -82,7 +88,8 @@ class CSP:
                     return True
 
                 # if the board is not solvable, backtrack
-                self.variables[ind] = domain_temp
+                self.variables = variables_temp
+                self.heap = heap_temp
 
         # if no value in the domain is valid, return False
         return False
