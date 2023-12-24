@@ -161,8 +161,9 @@ class Puzzle:
         solution = ai.solve()
         print("Solution:", solution)
         if solution:
-            self.set_puzzle(solution)
-            return True
+            pygame.display.update()
+            pygame.time.delay(100)
+            return solution
 
 # Cube class
 class Cube:

@@ -1,9 +1,10 @@
 from PQ import PQ
 from copy import deepcopy
+from functions import *
+
 # Domain is a list of 10 values, each value is True if it is available. the 10th value is the number of available values
 FULL_DOMAIN = ([True]*9) + [9]
 EMPTY_DOMAIN = ([False]*9) + [0]
-PUZZLE_SIZE = 9
 
 DEBUG = True
 my_print = print if DEBUG else lambda *args, **kwargs: None
@@ -219,30 +220,6 @@ class CSP:
         self.heap.heapify()
 
         return self.variables[index][9] > 0
-
-
-def print_puzzle(puzzle):
-    """
-    Prints the Sudoku puzzle board.
-
-    Args:
-        board (list): The Sudoku puzzle board.
-
-    Returns:
-        None
-    """
-    for i in range(PUZZLE_SIZE):
-        if i % 3 == 0 and i != 0:
-            print("- - - - - - - - - - - -  ")
-
-        for j in range(PUZZLE_SIZE):
-            if j % 3 == 0 and j != 0:
-                print(" | ", end="")
-
-            if j == 8:
-                print(puzzle[i * PUZZLE_SIZE + j])
-            else:
-                print(str(puzzle[i * PUZZLE_SIZE + j]) + " ", end="")
 
 
 if __name__ == "__main__":
