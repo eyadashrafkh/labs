@@ -157,12 +157,13 @@ class Puzzle:
         #         pygame.time.delay(100)
         #
         # return False
-
+        self.update_puzzle()
         ai = CSP(self.puzzle)
         solution = ai.solve()
         print("Solution:", solution)
         if solution:
-            self.set_puzzle(solution)
+            pygame.display.update()
+            pygame.time.delay(100)
             return True
 
 
@@ -279,7 +280,6 @@ def main():
     # Create buttons
     button1 = Button(20, 640, "AI generate Puzzle", generate_puzzle)
     button2 = Button(390, 640, "Insert Puzzle", init_puzzle)
-    # button3 = Button(220, 640, "Solve Puzzle", solve)
 
     buttons = [button1, button2]
 
@@ -296,6 +296,7 @@ def main():
                             puzzle.set_puzzle(button.get_puzzle())
                 else:
                     button.hovered = False
+                    
             if event.type == pygame.QUIT:
                 run = False
 
