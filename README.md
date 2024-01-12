@@ -124,15 +124,20 @@ flags in the PQ class. Booleans were chosen because they are a simple and effici
 to represent binary (true/false) information.
 
 ## GUI
-User initialization:
-![Screenshot 2023-12-25 145323](https://github.com/eyadashrafkh/labs/assets/97104406/3d0103a3-59e8-459d-8f60-af4d153175f6)
-Puzzle generation:
-![Screenshot 2023-12-25 145344](https://github.com/eyadashrafkh/labs/assets/97104406/9c06b5f3-9f24-453b-84dc-21c47b591743)
-Temp insertion:
-![Screenshot 2023-12-25 145355](https://github.com/eyadashrafkh/labs/assets/97104406/c46bd90a-c6b5-403a-9bbe-27d1a609feba)
-Correct insertion:
-![Screenshot 2023-12-25 145410](https://github.com/eyadashrafkh/labs/assets/97104406/00ffab0f-848a-4a57-8867-bb1a596ba2c8)
-Wrong insertion:
-![Screenshot 2023-12-25 145418](https://github.com/eyadashrafkh/labs/assets/97104406/57c48d0d-ae4e-49ac-970a-351661bd2abb)
-AI solve:
-![Screenshot 2023-12-25 145433](https://github.com/eyadashrafkh/labs/assets/97104406/8b912dba-0ef2-4ed6-8dd1-a43c6c8ca37f)
+- User initialization:
+    ![Screenshot 2023-12-25 145323](https://github.com/eyadashrafkh/labs/assets/97104406/3d0103a3-59e8-459d-8f60-af4d153175f6){:height="200px"}
+
+- Puzzle generation:
+    ![Screenshot 2023-12-25 145344](https://github.com/eyadashrafkh/labs/assets/97104406/9c06b5f3-9f24-453b-84dc-21c47b591743){:height="200px"}
+
+- Temp insertion:
+    ![Screenshot 2023-12-25 145355](https://github.com/eyadashrafkh/labs/assets/97104406/c46bd90a-c6b5-403a-9bbe-27d1a609feba){:height="200px"}
+
+- Correct insertion:
+    ![Screenshot 2023-12-25 145410](https://github.com/eyadashrafkh/labs/assets/97104406/00ffab0f-848a-4a57-8867-bb1a596ba2c8){:height="200px"}
+
+- Wrong insertion:
+    ![Screenshot 2023-12-25 145418](https://github.com/eyadashrafkh/labs/assets/97104406/57c48d0d-ae4e-49ac-970a-351661bd2abb){:height="200px"}
+
+- AI solve:
+    ![Screenshot 2023-12-25 145433](https://github.com/eyadashrafkh/labs/assets/97104406/8b912dba-0ef2-4ed6-8dd1-a43c6c8ca37f){:height="200px"}
