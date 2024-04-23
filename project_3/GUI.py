@@ -3,6 +3,7 @@ import time
 from functions import *
 from puzzle_genetator import generate_puzzle
 from CSP import CSP
+import pygame
 pygame.font.init()
 
 
@@ -264,7 +265,12 @@ class Button:
     def get_puzzle(self):
         return self.puzzle
 
+def slv(puzzle):
+    global sol
+    ai = CSP(puzzle)
+    sol = ai.solve()
 
+sol = init_puzzle()
 def main():
     win = pygame.display.set_mode((540,680))
     pygame.display.set_caption("Sudoku Solver")
@@ -277,7 +283,7 @@ def main():
     # Create buttons
     button1 = Button(20, 640, "AI generate Puzzle", generate_puzzle)
     button2 = Button(390, 640, "Insert Puzzle", init_puzzle)
-
+    button3 = Button(250, 640, "Commit Puzzle", lambda : slv(puzzle.get_puzzle()))
     buttons = [button1, button2]
 
     while run:
@@ -293,7 +299,11 @@ def main():
                             puzzle.set_puzzle(button.get_puzzle())
                 else:
                     button.hovered = False
-                    
+
+            if button3.is_cursor_in_button(pygame.mouse.get_pos()):
+                if button3.handle_event(event):
+                    print_puzzle(sol)
+
             if event.type == pygame.QUIT:
                 run = False
 
@@ -334,12 +344,25 @@ def main():
                 if event.key == pygame.K_RETURN:
                     i, j = puzzle.selected
                     index = i * 9 + j  # Convert 2D index to 1D index
+                    # print_puzzle(sol)
                     if puzzle.cubes[index].temp != 0:
-                        if puzzle.place(puzzle.cubes[index].temp):
-                            print("Success")
+                        if sol[index] != 0:
+                            if sol[index] == puzzle.cubes[index].temp:
+                                if puzzle.place(puzzle.cubes[index].temp):
+                                    print("Success")
+                                else:
+                                    puzzle.color = "Red"
+                                    puzzle.update_puzzle()
+                                    puzzle.cubes[index].set_temp(0)
+                                    print("Wrong")
+                                    strikes += 1
                         else:
-                            print("Wrong")
-                            strikes += 1
+                            if puzzle.place(puzzle.cubes[index].temp):
+                                print("Success")
+                            else:
+                                print("Wrong")
+                                strikes += 1
+
                         key = None
 
                         if puzzle.is_finished():
@@ -359,6 +382,7 @@ def main():
 
         for button in buttons:
             button.draw(win)
+        button3.draw(win)
 
         redraw_window(win, puzzle, play_time, strikes)
         pygame.display.update()
